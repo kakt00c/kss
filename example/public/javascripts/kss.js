@@ -6,6 +6,9 @@
     function KssStateGenerator() {
       var idx, idxs, pseudos, replaceRule, rule, stylesheet, _i, _len, _len2, _ref, _ref2;
       pseudos = /(\:hover|\:disabled|\:active|\:visited|\:focus)/g;
+      replaceRule = function(matched) {
+        return matched.replace(/\:/, '.pseudo-class-');
+      };
       try {
         _ref = document.styleSheets;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -14,10 +17,7 @@
           _ref2 = stylesheet.cssRules;
           for (idx = 0, _len2 = _ref2.length; idx < _len2; idx++) {
             rule = _ref2[idx];
-            while ((rule.type === CSSRule.STYLE_RULE) && pseudos.test(rule.selectorText)) {
-              replaceRule = function(matched, stuff) {
-                return matched.replace(/\:/g, '.pseudo-class-');
-              };
+            if ((rule.type === CSSRule.STYLE_RULE) && rule.selectorText.match(pseudos)) {
               this.insertRule(rule.cssText.replace(pseudos, replaceRule));
             }
           }
